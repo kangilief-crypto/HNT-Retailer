@@ -106,44 +106,39 @@ st.markdown(f"""
     header[data-testid="stHeader"] {{ display: none; }}
     [data-testid="stSidebar"] {{ display: none; }}
 
-    /* ── 상단 헤더 (로고 박스와 높이 통일) ── */
+    /* ── 상단 헤더 (제목+부가멘트만, 위쪽 정렬, 여유 공간) ── */
     .top-header {{
         background: linear-gradient(135deg, {PURPLE} 0%, {MINT} 180%);
         border-radius: 12px;
-        padding: 18px 28px;
+        padding: 28px 32px;
         color: white;
         height: 130px;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: flex-start;
         box-sizing: border-box;
         overflow: hidden;
     }}
-    .top-header-text {{ width: 100%; }}
+    .top-header-text {{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }}
     .top-header-text h1 {{
-        font-size: 30px !important;
+        font-size: 28px !important;
         font-weight: 800 !important;
         margin: 0 !important;
         color: white !important;
         letter-spacing: -0.3px;
-        line-height: 1.2;
+        line-height: 1.25;
     }}
     .top-header-text p {{
-        font-size: 12.5px !important;
-        margin: 6px 0 0 0 !important;
+        font-size: 13px !important;
+        margin: 10px 0 0 0 !important;
         color: rgba(255,255,255,0.92) !important;
         line-height: 1.4;
-    }}
-    .top-header-tag {{
-        display: inline-block;
-        background: rgba(255,255,255,0.2);
-        padding: 3px 10px;
-        font-size: 10.5px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        border-radius: 4px;
-        margin-bottom: 6px;
-        color: white;
     }}
 
     /* ── 탭 디자인 ── */
@@ -447,7 +442,7 @@ def load_proposal_file():
     return None
 
 # ─────────────────────────────────────────────────────
-# 상단 헤더 (로고 박스와 제목 박스 높이 130px 통일)
+# 상단 헤더 (태그 제거 + 제목·부가멘트만)
 # ─────────────────────────────────────────────────────
 hanatour_logo_b64 = logo_to_base64("hanatour.png")
 
@@ -480,7 +475,6 @@ with header_right:
     st.markdown(
         '<div class="top-header">'
         '<div class="top-header-text">'
-        '<div class="top-header-tag">HANATOUR · RETAILER GUIDE</div>'
         '<h1>유통채널 안내</h1>'
         '<p>영업팀 대상 유통채널 관련 내용 안내 드립니다.</p>'
         '</div>'

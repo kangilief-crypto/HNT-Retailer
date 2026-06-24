@@ -106,19 +106,22 @@ st.markdown(f"""
     header[data-testid="stHeader"] {{ display: none; }}
     [data-testid="stSidebar"] {{ display: none; }}
 
-    /* ── 상단 헤더 ── */
+    /* ── 상단 헤더 (로고 박스와 높이 통일) ── */
     .top-header {{
         background: linear-gradient(135deg, {PURPLE} 0%, {MINT} 180%);
         border-radius: 12px;
-        padding: 24px 32px;
+        padding: 18px 28px;
         color: white;
-        min-height: 130px;
+        height: 130px;
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+        overflow: hidden;
     }}
     .top-header-text {{ width: 100%; }}
     .top-header-text h1 {{
-        font-size: 28px !important;
+        font-size: 22px !important;
         font-weight: 800 !important;
         margin: 0 !important;
         color: white !important;
@@ -126,20 +129,20 @@ st.markdown(f"""
         line-height: 1.2;
     }}
     .top-header-text p {{
-        font-size: 13.5px !important;
-        margin: 8px 0 0 0 !important;
+        font-size: 12.5px !important;
+        margin: 6px 0 0 0 !important;
         color: rgba(255,255,255,0.92) !important;
         line-height: 1.4;
     }}
     .top-header-tag {{
         display: inline-block;
         background: rgba(255,255,255,0.2);
-        padding: 5px 12px;
-        font-size: 11px;
+        padding: 3px 10px;
+        font-size: 10.5px;
         font-weight: 700;
-        letter-spacing: 1.2px;
+        letter-spacing: 1px;
         border-radius: 4px;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
         color: white;
     }}
 
@@ -444,7 +447,7 @@ def load_proposal_file():
     return None
 
 # ─────────────────────────────────────────────────────
-# 상단 헤더 (base64 임베딩으로 박스 안에 로고 고정)
+# 상단 헤더 (로고 박스와 제목 박스 높이 130px 통일)
 # ─────────────────────────────────────────────────────
 hanatour_logo_b64 = logo_to_base64("hanatour.png")
 
@@ -454,11 +457,11 @@ with header_left:
     if hanatour_logo_b64:
         st.markdown(
             f'<div style="background:white; border:1px solid #E5E7EB; '
-            f'border-radius:12px; height:130px; '
+            f'border-radius:12px; height:130px; box-sizing:border-box; '
             f'display:flex; align-items:center; justify-content:center; '
-            f'padding:18px 22px; overflow:hidden;">'
+            f'padding:14px 18px; overflow:hidden;">'
             f'<img src="{hanatour_logo_b64}" '
-            f'style="max-height:90px; max-width:100%; width:auto; height:auto; '
+            f'style="max-height:95px; max-width:100%; width:auto; height:auto; '
             f'object-fit:contain; display:block;" />'
             f'</div>',
             unsafe_allow_html=True,
@@ -466,7 +469,7 @@ with header_left:
     else:
         st.markdown(
             f'<div style="background:white; border:1px solid #E5E7EB; '
-            f'border-radius:12px; height:130px; '
+            f'border-radius:12px; height:130px; box-sizing:border-box; '
             f'display:flex; align-items:center; justify-content:center; '
             f'font-weight:800; color:{PURPLE}; font-size:18px;">'
             f'HANATOUR</div>',

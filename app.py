@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from pathlib import Path
 
 # ─────────────────────────────────────────────────────
@@ -106,21 +105,11 @@ st.markdown(f"""
     .top-header {{
         background: linear-gradient(135deg, {PURPLE} 0%, {MINT} 180%);
         border-radius: 12px;
-        padding: 26px 32px;
+        padding: 20px 28px;
         color: white;
-        margin-bottom: 20px;
+        height: 96px;
         display: flex;
         align-items: center;
-        gap: 24px;
-    }}
-    .top-header-logo {{
-        background: white;
-        border-radius: 10px;
-        padding: 10px 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
     }}
     .top-header-text h1 {{
         font-size: 24px;
@@ -144,8 +133,17 @@ st.markdown(f"""
         border-radius: 4px;
         margin-bottom: 8px;
     }}
+    .header-logo-box {{
+        background: white;
+        border-radius: 10px;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 96px;
+    }}
 
-    /* ── 탭 디자인 (볼드 강화) ── */
+    /* ── 탭 디자인 ── */
     .stTabs [data-baseweb="tab-list"] {{
         gap: 4px;
         background: {GRAY_100};
@@ -269,7 +267,7 @@ st.markdown(f"""
     .step-title {{ font-size: 13.5px; font-weight: 600; color: {BLACK}; }}
     .step-sub {{ font-size: 12px; color: {GRAY_500}; margin-top: 3px; line-height: 1.5; }}
 
-    /* ── 분기 안내 박스 ── */
+    /* ── 분기 마커 ── */
     .branch-marker {{
         margin: 20px 0 12px 0;
         text-align: center;
@@ -304,32 +302,7 @@ st.markdown(f"""
         font-weight: 700;
     }}
 
-    /* ── 채널 카드 ── */
-    .channel-card {{
-        border: 1px solid {GRAY_200};
-        border-radius: 12px;
-        padding: 24px;
-        background: white;
-        text-align: center;
-    }}
-    .channel-logo-wrap {{
-        height: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 12px;
-    }}
-    .channel-name {{
-        font-size: 16px;
-        font-weight: 700;
-        color: {BLACK};
-        margin-bottom: 4px;
-    }}
-    .channel-sub {{
-        font-size: 12px;
-        color: {GRAY_500};
-        margin-bottom: 10px;
-    }}
+    /* ── 상태 배지 ── */
     .status-badge {{
         display: inline-block;
         font-size: 11px;
@@ -365,7 +338,7 @@ st.markdown(f"""
         line-height: 1.6;
     }}
 
-    /* ── 점선 헬프 박스 ── */
+    /* ── 빈 상태 ── */
     .empty-state {{
         border: 2px dashed {GRAY_200};
         border-radius: 10px;
@@ -434,7 +407,6 @@ def render_steps_html(steps, start_num=1):
         )
     return items
 
-
 def load_logo(filename):
     if not filename:
         return None
@@ -446,32 +418,29 @@ def load_logo(filename):
 # ─────────────────────────────────────────────────────
 hanatour_logo = load_logo("hanatour.png")
 
-header_col1, header_col2 = st.columns([1, 8])
-with header_col1:
-    st.markdown(
-        f'<div class="top-header" style="padding:14px; justify-content:center;">',
-        unsafe_allow_html=True,
-    )
+header_left, header_right = st.columns([1.2, 8])
+with header_left:
     if hanatour_logo:
+        st.markdown('<div class="header-logo-box">', unsafe_allow_html=True)
         st.image(hanatour_logo, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     else:
         st.markdown(
-            f'<div style="background:white; border-radius:8px; padding:14px 10px; '
-            f'text-align:center; font-weight:800; color:{PURPLE}; font-size:13px;">'
-            f'HANATOUR</div>',
+            f'<div class="header-logo-box">'
+            f'<div style="font-weight:800; color:{PURPLE}; font-size:15px;">HANATOUR</div>'
+            f'</div>',
             unsafe_allow_html=True,
         )
-    st.markdown('</div>', unsafe_allow_html=True)
 
-with header_col2:
+with header_right:
     st.markdown(
-        f'<div class="top-header" style="margin-left:-8px;">'
-        f'<div class="top-header-text">'
-        f'<div class="top-header-tag">HANATOUR · RETAILER GUIDE</div>'
-        f'<h1>유통채널 안내</h1>'
-        f'<p>영업팀 대상 유통채널 관련 내용 안내 드립니다.</p>'
-        f'</div>'
-        f'</div>',
+        '<div class="top-header">'
+        '<div class="top-header-text">'
+        '<div class="top-header-tag">HANATOUR · RETAILER GUIDE</div>'
+        '<h1>유통채널 안내</h1>'
+        '<p>영업팀 대상 유통채널 관련 내용 안내 드립니다.</p>'
+        '</div>'
+        '</div>',
         unsafe_allow_html=True,
     )
 
@@ -521,8 +490,8 @@ with tabs[0]:
             use_container_width=True,
         )
 
-    # ── 2. 유통점 문의절차 (선형 5단계 → 분기 → 2갈래) ──
-    section_header(2, "유통점 문의 절차")
+    # ── 2. 유통점 입점 절차 ──
+    section_header(2, "유통점 입점 절차")
 
     # 1~5단계 (선형)
     st.markdown(
@@ -536,7 +505,7 @@ with tabs[0]:
         unsafe_allow_html=True,
     )
 
-    # 분기 마커: "대리점 선정 및 입점 확정"
+    # 분기 마커
     st.markdown(
         f'<div class="branch-marker">'
         f'<span class="branch-marker-line"></span>'
@@ -546,7 +515,7 @@ with tabs[0]:
         unsafe_allow_html=True,
     )
 
-    # 두 갈래 분기: A. 공식인증예약센터 / B. 일반대리점
+    # 두 갈래 분기: A / B
     c1, c2 = st.columns(2)
     with c1:
         st.markdown(
@@ -571,8 +540,7 @@ with tabs[0]:
             unsafe_allow_html=True,
         )
 
-
-        # ── 3. 유통점 중요 안내사항 ──
+    # ── 3. 유통점 중요 안내사항 ──
     section_header(3, "유통점 중요 안내사항")
     st.markdown(
         f'<div class="card">'
@@ -611,36 +579,6 @@ with tabs[0]:
         unsafe_allow_html=True,
     )
 
-    # ── 4. 채널별 요약 ──
-    section_header(4, "채널별 요약")
-    cols = st.columns(4)
-    items = list(CHANNELS.items())
-    for idx, (name, info) in enumerate(items):
-        with cols[idx % 4]:
-            st.markdown('<div class="channel-card">', unsafe_allow_html=True)
-            st.markdown('<div class="channel-logo-wrap">', unsafe_allow_html=True)
-            logo_path = load_logo(info["logo"])
-            if logo_path:
-                st.image(logo_path, width=64)
-            else:
-                st.markdown(
-                    f'<div style="width:64px;height:64px;background:{GRAY_100};'
-                    f'border-radius:8px;display:flex;align-items:center;'
-                    f'justify-content:center;color:{GRAY_500};font-weight:700;">기타</div>',
-                    unsafe_allow_html=True,
-                )
-            st.markdown('</div>', unsafe_allow_html=True)
-            status_cls = "status-active" if info["status"] == "운영중" else "status-prep"
-            st.markdown(
-                f'<div class="channel-name">{name}</div>'
-                f'<div class="channel-sub">{info["subtitle"]}</div>'
-                f'<span class="status-badge {status_cls}">{info["status"]}</span>'
-                f'</div>',
-                unsafe_allow_html=True,
-            )
-        if (idx + 1) % 4 == 0 and idx != len(items) - 1:
-            cols = st.columns(4)
-
 # ═════════════════════════════════════════════════════
 # 탭 1~7: 채널별 상세
 # ═════════════════════════════════════════════════════
@@ -674,6 +612,7 @@ def render_channel_tab(channel_name: str, info: dict):
     st.markdown('<div style="height: 8px;"></div>', unsafe_allow_html=True)
 
     if channel_name == "홈플러스":
+        # 홈플러스 상세 데이터
         section_header(1, "임대 · 관리비")
         c1, c2, c3 = st.columns(3)
         with c1:
@@ -731,6 +670,7 @@ def render_channel_tab(channel_name: str, info: dict):
                 unsafe_allow_html=True,
             )
     else:
+        # 그 외 채널: 빈 상태
         st.markdown(
             f'<div class="empty-state">'
             f'<div style="font-size:32px; margin-bottom:8px;">📋</div>'

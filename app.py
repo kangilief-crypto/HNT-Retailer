@@ -1,4 +1,5 @@
 import streamlit as st
+import base64
 from pathlib import Path
 
 # ─────────────────────────────────────────────────────
@@ -23,10 +24,14 @@ GRAY_500 = "#6B7280"
 GRAY_700 = "#374151"
 
 # ─────────────────────────────────────────────────────
-# 채널 데이터
+# 경로
 # ─────────────────────────────────────────────────────
 ASSETS = Path("assets")
+PROPOSAL_FILE = ASSETS / "유통점_입점제안서_양식.pptx"
 
+# ─────────────────────────────────────────────────────
+# 채널 데이터
+# ─────────────────────────────────────────────────────
 CHANNELS = {
     "이마트": {
         "logo": "emart.png",
@@ -138,13 +143,6 @@ st.markdown(f"""
         color: white;
     }}
 
-    /* ── 헤더 로고 이미지 크기 제한 ── */
-    [data-testid="column"]:first-child [data-testid="stImage"] img {{
-        max-height: 90px !important;
-        width: auto !important;
-        object-fit: contain !important;
-    }}
-
     /* ── 탭 디자인 ── */
     .stTabs [data-baseweb="tab-list"] {{
         gap: 4px;
@@ -218,6 +216,18 @@ st.markdown(f"""
         line-height: 1.8;
     }}
     .info-banner b {{ color: {PURPLE}; }}
+
+    /* ── 다운로드 버튼 강조 ── */
+    .stDownloadButton button {{
+        background: {PURPLE} !important;
+        color: white !important;
+        border: none !important;
+        font-weight: 700 !important;
+    }}
+    .stDownloadButton button:hover {{
+        background: #4b22a0 !important;
+        color: white !important;
+    }}
 
     /* ── 카드 ── */
     .card {{
@@ -415,28 +425,48 @@ def load_logo(filename):
     path = ASSETS / filename
     return str(path) if path.exists() else None
 
+def logo_to_base64(filename):
+    """로고 파일을 base64로 인코딩하여 HTML에 직접 임베딩"""
+    if not filename:
+        return None
+    path = ASSETS / filename
+    if not path.exists():
+        return None
+    with open(path, "rb") as f:
+        encoded = base64.b64encode(f.read()).decode()
+    return f"data:image/png;base64,{encoded}"
+
+def load_proposal_file():
+    """입점제안서 양식 파일을 바이트로 읽어 반환"""
+    if PROPOSAL_FILE.exists():
+        with open(PROPOSAL_FILE, "rb") as f:
+            return f.read()
+    return None
+
 # ─────────────────────────────────────────────────────
-# 상단 헤더 (좌측 로고 박스 + 우측 그라데이션 박스)
+# 상단 헤더 (base64 임베딩으로 박스 안에 로고 고정)
 # ─────────────────────────────────────────────────────
-hanatour_logo = load_logo("hanatour.png")
+hanatour_logo_b64 = logo_to_base64("hanatour.png")
 
 header_left, header_right = st.columns([1.3, 8], gap="small")
 
 with header_left:
-    if hanatour_logo:
+    if hanatour_logo_b64:
         st.markdown(
-            '<div style="background:white; border:1px solid #E5E7EB; '
-            'border-radius:12px; padding:18px 22px; height:130px; '
-            'display:flex; align-items:center; justify-content:center; '
-            'overflow:hidden;">',
+            f'<div style="background:white; border:1px solid #E5E7EB; '
+            f'border-radius:12px; height:130px; '
+            f'display:flex; align-items:center; justify-content:center; '
+            f'padding:18px 22px; overflow:hidden;">'
+            f'<img src="{hanatour_logo_b64}" '
+            f'style="max-height:90px; max-width:100%; width:auto; height:auto; '
+            f'object-fit:contain; display:block;" />'
+            f'</div>',
             unsafe_allow_html=True,
         )
-        st.image(hanatour_logo, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
     else:
         st.markdown(
             f'<div style="background:white; border:1px solid #E5E7EB; '
-            f'border-radius:12px; padding:18px 22px; height:130px; '
+            f'border-radius:12px; height:130px; '
             f'display:flex; align-items:center; justify-content:center; '
             f'font-weight:800; color:{PURPLE}; font-size:18px;">'
             f'HANATOUR</div>',
@@ -494,12 +524,25 @@ with tabs[0]:
             use_container_width=True,
         )
     with b2:
-        st.link_button(
-            "입점제안서 양식 다운로드",
-            "#",
-            type="primary",
-            use_container_width=True,
-        )
+        # ── 입점제안서 양식 다운로드 버튼 ──
+        proposal_bytes = load_proposal_file()
+        if proposal_bytes:
+            st.download_button(
+                label="입점제안서 양식 다운로드",
+                data=proposal_bytes,
+                file_name="유통점_입점제안서_양식.pptx",
+                mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                use_container_width=True,
+                type="primary",
+            )
+        else:
+            st.link_button(
+                "입점제안서 양식 다운로드 (파일 없음)",
+                "#",
+                type="primary",
+                use_container_width=True,
+                disabled=True,
+            )
 
     # ── 2. 유통점 입점 절차 ──
     section_header(2, "유통점 입점 절차")

@@ -121,7 +121,7 @@ st.markdown(f"""
     }}
     .top-header-text {{ width: 100%; }}
     .top-header-text h1 {{
-        font-size: 22px !important;
+        font-size: 26px !important;
         font-weight: 800 !important;
         margin: 0 !important;
         color: white !important;

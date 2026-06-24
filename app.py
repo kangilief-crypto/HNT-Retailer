@@ -138,16 +138,23 @@ st.markdown(f"""
         color: white;
     }}
 
-     .header-logo-box {{
+       .header-logo-box {{
         background: white;
         border-radius: 10px;
-        padding: 20px 22px;
+        padding: 16px 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 130px;
-        border: 1px solid {GRAY_200};
+        height: 100%;
+        max-height: 130px;
+        overflow: hidden;
     }}
+    .header-logo-box img {{
+        max-height: 90px !important;
+        width: auto !important;
+        object-fit: contain !important;
+    }}
+
 
 
     /* ── 탭 디자인 ── */
@@ -421,23 +428,46 @@ def load_logo(filename):
     return str(path) if path.exists() else None
 
 # ─────────────────────────────────────────────────────
-# 상단 헤더 (하나투어 로고 + 제목)
+# 상단 헤더 (하나투어 로고 + 제목 — 한 박스 통합)
 # ─────────────────────────────────────────────────────
 hanatour_logo = load_logo("hanatour.png")
 
-header_left, header_right = st.columns([1.2, 8])
+# 보라색 그라데이션 헤더 박스 시작
+st.markdown('<div class="top-header" style="padding: 24px 32px;">', unsafe_allow_html=True)
+
+header_left, header_right = st.columns([1.3, 8])
+
 with header_left:
     if hanatour_logo:
-        st.markdown('<div class="header-logo-box">', unsafe_allow_html=True)
+        st.markdown(
+            '<div style="background:white; border-radius:8px; padding:12px 16px; '
+            'display:flex; align-items:center; justify-content:center; '
+            'height:100px; overflow:hidden;">',
+            unsafe_allow_html=True,
+        )
         st.image(hanatour_logo, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     else:
         st.markdown(
-            f'<div class="header-logo-box">'
-            f'<div style="font-weight:800; color:{PURPLE}; font-size:15px;">HANATOUR</div>'
-            f'</div>',
+            f'<div style="background:white; border-radius:8px; padding:12px; '
+            f'height:100px; display:flex; align-items:center; justify-content:center; '
+            f'font-weight:800; color:{PURPLE}; font-size:16px;">'
+            f'HANATOUR</div>',
             unsafe_allow_html=True,
         )
+
+with header_right:
+    st.markdown(
+        '<div class="top-header-text" style="padding-left:12px;">'
+        '<div class="top-header-tag">HANATOUR · RETAILER GUIDE</div>'
+        '<h1>유통채널 안내</h1>'
+        '<p>영업팀 대상 유통채널 관련 내용 안내 드립니다.</p>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+st.markdown('</div>', unsafe_allow_html=True)
+
 
 with header_right:
     st.markdown(

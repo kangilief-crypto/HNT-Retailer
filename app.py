@@ -101,7 +101,7 @@ st.markdown(f"""
     header[data-testid="stHeader"] {{ display: none; }}
     [data-testid="stSidebar"] {{ display: none; }}
 
-        /* ── 상단 헤더 ── */
+    /* ── 상단 헤더 ── */
     .top-header {{
         background: linear-gradient(135deg, {PURPLE} 0%, {MINT} 180%);
         border-radius: 12px;
@@ -138,24 +138,12 @@ st.markdown(f"""
         color: white;
     }}
 
-       .header-logo-box {{
-        background: white;
-        border-radius: 10px;
-        padding: 16px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        max-height: 130px;
-        overflow: hidden;
-    }}
-    .header-logo-box img {{
+    /* ── 헤더 로고 이미지 크기 제한 ── */
+    [data-testid="column"]:first-child [data-testid="stImage"] img {{
         max-height: 90px !important;
         width: auto !important;
         object-fit: contain !important;
     }}
-
-
 
     /* ── 탭 디자인 ── */
     .stTabs [data-baseweb="tab-list"] {{
@@ -428,46 +416,32 @@ def load_logo(filename):
     return str(path) if path.exists() else None
 
 # ─────────────────────────────────────────────────────
-# 상단 헤더 (하나투어 로고 + 제목 — 한 박스 통합)
+# 상단 헤더 (좌측 로고 박스 + 우측 그라데이션 박스)
 # ─────────────────────────────────────────────────────
 hanatour_logo = load_logo("hanatour.png")
 
-# 보라색 그라데이션 헤더 박스 시작
-st.markdown('<div class="top-header" style="padding: 24px 32px;">', unsafe_allow_html=True)
-
-header_left, header_right = st.columns([1.3, 8])
+header_left, header_right = st.columns([1.3, 8], gap="small")
 
 with header_left:
     if hanatour_logo:
         st.markdown(
-            '<div style="background:white; border-radius:8px; padding:12px 16px; '
+            '<div style="background:white; border:1px solid #E5E7EB; '
+            'border-radius:12px; padding:18px 22px; height:130px; '
             'display:flex; align-items:center; justify-content:center; '
-            'height:100px; overflow:hidden;">',
+            'overflow:hidden;">',
             unsafe_allow_html=True,
         )
         st.image(hanatour_logo, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     else:
         st.markdown(
-            f'<div style="background:white; border-radius:8px; padding:12px; '
-            f'height:100px; display:flex; align-items:center; justify-content:center; '
-            f'font-weight:800; color:{PURPLE}; font-size:16px;">'
+            f'<div style="background:white; border:1px solid #E5E7EB; '
+            f'border-radius:12px; padding:18px 22px; height:130px; '
+            f'display:flex; align-items:center; justify-content:center; '
+            f'font-weight:800; color:{PURPLE}; font-size:18px;">'
             f'HANATOUR</div>',
             unsafe_allow_html=True,
         )
-
-with header_right:
-    st.markdown(
-        '<div class="top-header-text" style="padding-left:12px;">'
-        '<div class="top-header-tag">HANATOUR · RETAILER GUIDE</div>'
-        '<h1>유통채널 안내</h1>'
-        '<p>영업팀 대상 유통채널 관련 내용 안내 드립니다.</p>'
-        '</div>',
-        unsafe_allow_html=True,
-    )
-
-st.markdown('</div>', unsafe_allow_html=True)
-
 
 with header_right:
     st.markdown(

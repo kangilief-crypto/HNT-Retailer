@@ -78,19 +78,19 @@ INQUIRY_PROCESS = [
 ]
 
 ENTRY_OFFICIAL = [
-    ("입점제안서 제출", None),
     ("선정 품의 진행", "영업전략팀 상신"),
+    ("인테리어 작업 준비", "인테리어 규정은 유통채널별로 상이, 자세한 규정은 각 채널 탭 확인"),
     ("전자계약 체결", "글로싸인 발송"),
-    ("관광사업자 · 사업자 등록 (주소변경)", "계약서 또는 유통점 사용 승인 공문 증빙"),
+    ("사업자/관광사업자 등록증 주소변경 진행", "전대차계약서 혹은 사용승인 공문 증빙"),
 ]
 
 ENTRY_GENERAL = [
-    ("입점제안서 제출", None),
+    ("선정 품의 진행", "영업전략팀 상신"),
     ("공식인증 개설 신청 관련서류 게시판 등록 및 신용정보조회",
      "개설 품의 작성 제외 — 영업전략팀 선정 품의로 갈음"),
-    ("선정 품의 진행", "영업전략팀 상신"),
+    ("인테리어 작업 준비", "인테리어 규정은 유통채널별로 상이, 자세한 규정은 각 채널 탭 확인"),
     ("전자계약 체결", "글로싸인 발송"),
-    ("관광사업자 · 사업자 등록 (주소변경)", "계약서 또는 유통점 사용 승인 공문 증빙"),
+    ("사업자/관광사업자 등록증 주소변경 진행", "전대차계약서 혹은 사용승인 공문 증빙"),
 ]
 
 # ─────────────────────────────────────────────────────
@@ -420,9 +420,9 @@ def section_header(num: int, title: str):
         unsafe_allow_html=True,
     )
 
-def render_steps_html(steps):
+def render_steps_html(steps, start_num=1):
     items = ""
-    for i, (title, sub) in enumerate(steps, 1):
+    for i, (title, sub) in enumerate(steps, start_num):
         sub_html = f'<div class="step-sub">{sub}</div>' if sub else ""
         items += (
             f'<div class="step-item">'
@@ -433,6 +433,7 @@ def render_steps_html(steps):
             f'</div></div>'
         )
     return items
+
 
 def load_logo(filename):
     if not filename:
@@ -552,9 +553,9 @@ with tabs[0]:
             f'<div class="card">'
             f'<div class="card-title">'
             f'<span>A. 공식인증예약센터일 경우</span>'
-            f'<span class="card-count">총 {len(ENTRY_OFFICIAL)}단계</span>'
+            f'<span class="card-count">총 {len(ENTRY_OFFICIAL)}단계 (6~9)</span>'
             f'</div>'
-            f'{render_steps_html(ENTRY_OFFICIAL)}'
+            f'{render_steps_html(ENTRY_OFFICIAL, start_num=6)}'
             f'</div>',
             unsafe_allow_html=True,
         )
@@ -563,12 +564,13 @@ with tabs[0]:
             f'<div class="card">'
             f'<div class="card-title">'
             f'<span>B. 일반대리점일 경우</span>'
-            f'<span class="card-count">총 {len(ENTRY_GENERAL)}단계</span>'
+            f'<span class="card-count">총 {len(ENTRY_GENERAL)}단계 (6~10)</span>'
             f'</div>'
-            f'{render_steps_html(ENTRY_GENERAL)}'
+            f'{render_steps_html(ENTRY_GENERAL, start_num=6)}'
             f'</div>',
             unsafe_allow_html=True,
         )
+
 
     # ── 3. 지원 방법 · 근무 규정 ──
     section_header(3, "지원 방법 · 근무 규정")

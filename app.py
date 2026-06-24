@@ -101,47 +101,54 @@ st.markdown(f"""
     header[data-testid="stHeader"] {{ display: none; }}
     [data-testid="stSidebar"] {{ display: none; }}
 
-    /* ── 상단 헤더 ── */
+        /* ── 상단 헤더 ── */
     .top-header {{
         background: linear-gradient(135deg, {PURPLE} 0%, {MINT} 180%);
         border-radius: 12px;
-        padding: 20px 28px;
+        padding: 24px 32px;
         color: white;
-        height: 96px;
+        min-height: 130px;
         display: flex;
         align-items: center;
     }}
+    .top-header-text {{ width: 100%; }}
     .top-header-text h1 {{
-        font-size: 24px;
-        font-weight: 800;
-        margin: 0;
-        color: white;
+        font-size: 28px !important;
+        font-weight: 800 !important;
+        margin: 0 !important;
+        color: white !important;
         letter-spacing: -0.3px;
+        line-height: 1.2;
     }}
     .top-header-text p {{
-        font-size: 13px;
-        margin: 6px 0 0 0;
-        color: rgba(255,255,255,0.9);
+        font-size: 13.5px !important;
+        margin: 8px 0 0 0 !important;
+        color: rgba(255,255,255,0.92) !important;
+        line-height: 1.4;
     }}
     .top-header-tag {{
         display: inline-block;
-        background: rgba(255,255,255,0.18);
-        padding: 4px 10px;
+        background: rgba(255,255,255,0.2);
+        padding: 5px 12px;
         font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 1px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
         border-radius: 4px;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
+        color: white;
     }}
-    .header-logo-box {{
+
+     .header-logo-box {{
         background: white;
         border-radius: 10px;
-        padding: 14px 18px;
+        padding: 20px 22px;
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 96px;
+        min-height: 130px;
+        border: 1px solid {GRAY_200};
     }}
+
 
     /* ── 탭 디자인 ── */
     .stTabs [data-baseweb="tab-list"] {{

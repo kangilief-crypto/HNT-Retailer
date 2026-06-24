@@ -106,11 +106,11 @@ st.markdown(f"""
     header[data-testid="stHeader"] {{ display: none; }}
     [data-testid="stSidebar"] {{ display: none; }}
 
-    /* ── 상단 헤더 (제목 확대, 태그 제거) ── */
+    /* ── 상단 헤더 (로고 박스와 높이 통일) ── */
     .top-header {{
         background: linear-gradient(135deg, {PURPLE} 0%, {MINT} 180%);
         border-radius: 12px;
-        padding: 22px 32px;
+        padding: 18px 28px;
         color: white;
         height: 130px;
         display: flex;
@@ -121,28 +121,38 @@ st.markdown(f"""
     }}
     .top-header-text {{ width: 100%; }}
     .top-header-text h1 {{
-        font-size: 32px !important;
+        font-size: 22px !important;
         font-weight: 800 !important;
         margin: 0 !important;
         color: white !important;
-        letter-spacing: -0.5px;
-        line-height: 1.15;
+        letter-spacing: -0.3px;
+        line-height: 1.2;
     }}
     .top-header-text p {{
-        font-size: 13.5px !important;
-        margin: 10px 0 0 0 !important;
+        font-size: 12.5px !important;
+        margin: 6px 0 0 0 !important;
         color: rgba(255,255,255,0.92) !important;
         line-height: 1.4;
     }}
+    .top-header-tag {{
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        padding: 3px 10px;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-radius: 4px;
+        margin-bottom: 6px;
+        color: white;
+    }}
 
-    /* ── 탭 디자인 (헤더와 여유 공간 확보) ── */
+    /* ── 탭 디자인 ── */
     .stTabs [data-baseweb="tab-list"] {{
         gap: 4px;
         background: {GRAY_100};
         padding: 6px;
         border-radius: 10px;
-        margin-top: 32px;
-        margin-bottom: 28px;
+        margin-bottom: 20px;
     }}
     .stTabs [data-baseweb="tab"] {{
         background: transparent;
@@ -165,9 +175,8 @@ st.markdown(f"""
     }}
     .stTabs [data-baseweb="tab-panel"] {{ padding-top: 8px; }}
 
-    /* ── 섹션 헤더 (섹션 간 여유 공간) ── */
-    .section-wrap {{ margin: 44px 0 18px 0; }}
-    .section-wrap:first-of-type {{ margin-top: 8px; }}
+    /* ── 섹션 헤더 ── */
+    .section-wrap {{ margin: 24px 0 14px 0; }}
     .section-num {{
         display: inline-block;
         background: {PURPLE};
@@ -223,16 +232,13 @@ st.markdown(f"""
         color: white !important;
     }}
 
-    /* ── 카드 (A/B 박스 높이 통일) ── */
+    /* ── 카드 ── */
     .card {{
         border: 1px solid {GRAY_200};
         border-radius: 10px;
         padding: 20px 22px;
         background: white;
         height: 100%;
-        display: flex;
-        flex-direction: column;
-        box-sizing: border-box;
     }}
     .card-title {{
         font-size: 14px;
@@ -441,7 +447,7 @@ def load_proposal_file():
     return None
 
 # ─────────────────────────────────────────────────────
-# 상단 헤더 (태그 제거 + 제목 32px 확대)
+# 상단 헤더 (로고 박스와 제목 박스 높이 130px 통일)
 # ─────────────────────────────────────────────────────
 hanatour_logo_b64 = logo_to_base64("hanatour.png")
 
@@ -474,6 +480,7 @@ with header_right:
     st.markdown(
         '<div class="top-header">'
         '<div class="top-header-text">'
+        '<div class="top-header-tag">HANATOUR · RETAILER GUIDE</div>'
         '<h1>유통채널 안내</h1>'
         '<p>영업팀 대상 유통채널 관련 내용 안내 드립니다.</p>'
         '</div>'
@@ -565,11 +572,11 @@ with tabs[0]:
         unsafe_allow_html=True,
     )
 
-    # 두 갈래 분기: A / B (높이 통일 min-height: 560px)
-    c1, c2 = st.columns(2, gap="medium")
+    # 두 갈래 분기: A / B
+    c1, c2 = st.columns(2)
     with c1:
         st.markdown(
-            f'<div class="card" style="min-height:560px;">'
+            f'<div class="card">'
             f'<div class="card-title">'
             f'<span>A. 공식인증예약센터일 경우</span>'
             f'<span class="card-count">총 {len(ENTRY_OFFICIAL)}단계 (6~9)</span>'
@@ -580,7 +587,7 @@ with tabs[0]:
         )
     with c2:
         st.markdown(
-            f'<div class="card" style="min-height:560px;">'
+            f'<div class="card">'
             f'<div class="card-title">'
             f'<span>B. 일반대리점일 경우</span>'
             f'<span class="card-count">총 {len(ENTRY_GENERAL)}단계 (6~10)</span>'

@@ -572,38 +572,44 @@ with tabs[0]:
         )
 
 
-    # ── 3. 지원 방법 · 근무 규정 ──
-    section_header(3, "지원 방법 · 근무 규정")
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown(
-            f'<div class="card">'
-            f'<div class="card-title"><span>지원 방법</span></div>'
-            f'<div style="font-size:13.5px; color:{GRAY_700}; line-height:1.8;">'
-            f'• 입점 희망 대리점과 소통하며 <b>입점제안서 작성</b><br>'
-            f'• 작성 완료 후 영업전략팀 담당자에게 쪽지 전달'
-            f'</div>'
-            f'<div style="margin-top:14px; padding:12px 14px; background:{GRAY_50}; '
-            f'border-radius:4px; border-left:3px solid {PURPLE};">'
-            f'<div style="color:{GRAY_500}; font-size:11px;">영업전략팀 담당자</div>'
-            f'<div style="color:{BLACK}; font-weight:600; font-size:13.5px; margin-top:2px;">'
-            f'이강일B / 노태성</div>'
-            f'</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-    with c2:
-        st.markdown(
-            f'<div class="card">'
-            f'<div class="card-title"><span>근무 규정</span></div>'
-            f'<div style="font-size:13.5px; color:{GRAY_700}; line-height:1.9;">'
-            f'• 근무 시 <b>출입증(명찰) 패용</b> 필수<br>'
-            f'• 유통점 매장 영업시간 준수<br>'
-            f'• 출장·공항 미팅 등 부득이한 부재 시 <b>부재 중 팻말 설치 및 점포 담당자와 소통</b> 필수'
-            f'</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
+        # ── 3. 유통점 중요 안내사항 ──
+    section_header(3, "유통점 중요 안내사항")
+    st.markdown(
+        f'<div class="card">'
+        f'<div class="card-title"><span>유통점 운영 시 반드시 확인해주세요</span></div>'
+        f'<div class="step-item">'
+        f'<div class="step-circle">1</div>'
+        f'<div class="step-text">'
+        f'<div class="step-title">권리금 관련 효력 불인정</div>'
+        f'<div class="step-sub">유통점 내 입점 공간에 대해 <b>권리금과 관련한 어떠한 계약상 효력도 인정하지 않음.</b></div>'
+        f'</div></div>'
+        f'<div class="step-item">'
+        f'<div class="step-circle">2</div>'
+        f'<div class="step-text">'
+        f'<div class="step-title">영업시간 · 휴무일 준수</div>'
+        f'<div class="step-sub">영업시간 및 휴무일은 입점 시 체결한 계약서에 따라 <b>각 유통채널 영업규정에 따름.</b></div>'
+        f'</div></div>'
+        f'<div class="step-item">'
+        f'<div class="step-circle">3</div>'
+        f'<div class="step-text">'
+        f'<div class="step-title">부재 시 응대 원칙</div>'
+        f'<div class="step-sub">출장·공항 미팅 등 부재 시 <b>부재 중 팻말 설치 및 점포 담당자와 소통 필수.</b></div>'
+        f'</div></div>'
+        f'<div class="step-item">'
+        f'<div class="step-circle">4</div>'
+        f'<div class="step-text">'
+        f'<div class="step-title">집기 사용 기준</div>'
+        f'<div class="step-sub">유통점 내 사용 집기는 <b>방재 / 방염 검수 완료된 집기만 사용.</b></div>'
+        f'</div></div>'
+        f'<div class="step-item">'
+        f'<div class="step-circle">5</div>'
+        f'<div class="step-text">'
+        f'<div class="step-title">간판 제작 규정</div>'
+        f'<div class="step-sub">유통점 간판 제작 시 <b>하나투어 브랜드 단독 노출.</b> (여행사 이름, 전화번호 노출 X)</div>'
+        f'</div></div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
     # ── 4. 채널별 요약 ──
     section_header(4, "채널별 요약")

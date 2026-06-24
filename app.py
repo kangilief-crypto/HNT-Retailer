@@ -6,7 +6,7 @@ from pathlib import Path
 # 페이지 기본 설정
 # ─────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="유통점 채널 대시보드",
+    page_title="유통채널 안내",
     page_icon="🛍️",
     layout="wide",
 )
@@ -67,30 +67,30 @@ CHANNELS = {
 }
 
 # ─────────────────────────────────────────────────────
-# 공통 입점 절차 데이터
+# 통합 문의·입점 절차 데이터
 # ─────────────────────────────────────────────────────
-COMMON_STEPS_A = [
-    ("입점제안서 제출", None),
-    ("선정 품의 진행", "영업전략팀 상신"),
-    ("전자계약 체결", "글로싸인 발송"),
-    ("관광사업자 · 사업자 등록 (주소변경)", "계약서 또는 유통점 사용 승인 공문 증빙"),
-]
-
-COMMON_STEPS_B = [
-    ("입점제안서 제출", None),
-    ("공식인증 개설 신청 관련서류 게시판 등록 및 신용정보조회",
-     "개설 품의 작성 제외 — 영업전략팀 선정 품의로 갈음"),
-    ("선정 품의 진행", "영업전략팀 상신"),
-    ("전자계약 체결", "글로싸인 발송"),
-    ("관광사업자 · 사업자 등록 (주소변경)", "계약서 또는 유통점 사용 승인 공문 증빙"),
-]
-
 INQUIRY_PROCESS = [
     ("모집공고 확인", "유통점 모집공고 페이지에서 조건 확인"),
     ("대리점 소통", "입점 희망 대리점과 사전 협의 진행"),
     ("입점제안서 작성", "양식 다운로드 후 작성"),
     ("영업전략팀 전달", "담당자에게 쪽지로 제안서 전달"),
     ("내부 평가 · 선정", "동일 점포 복수 지원 시 평가지표 기반 선정"),
+]
+
+ENTRY_OFFICIAL = [
+    ("입점제안서 제출", None),
+    ("선정 품의 진행", "영업전략팀 상신"),
+    ("전자계약 체결", "글로싸인 발송"),
+    ("관광사업자 · 사업자 등록 (주소변경)", "계약서 또는 유통점 사용 승인 공문 증빙"),
+]
+
+ENTRY_GENERAL = [
+    ("입점제안서 제출", None),
+    ("공식인증 개설 신청 관련서류 게시판 등록 및 신용정보조회",
+     "개설 품의 작성 제외 — 영업전략팀 선정 품의로 갈음"),
+    ("선정 품의 진행", "영업전략팀 상신"),
+    ("전자계약 체결", "글로싸인 발송"),
+    ("관광사업자 · 사업자 등록 (주소변경)", "계약서 또는 유통점 사용 승인 공문 증빙"),
 ]
 
 # ─────────────────────────────────────────────────────
@@ -106,33 +106,46 @@ st.markdown(f"""
     .top-header {{
         background: linear-gradient(135deg, {PURPLE} 0%, {MINT} 180%);
         border-radius: 12px;
-        padding: 28px 32px;
+        padding: 26px 32px;
         color: white;
         margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
     }}
-    .top-header h1 {{
+    .top-header-logo {{
+        background: white;
+        border-radius: 10px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }}
+    .top-header-text h1 {{
         font-size: 24px;
-        font-weight: 700;
+        font-weight: 800;
         margin: 0;
         color: white;
+        letter-spacing: -0.3px;
     }}
-    .top-header p {{
+    .top-header-text p {{
         font-size: 13px;
         margin: 6px 0 0 0;
-        color: rgba(255,255,255,0.85);
+        color: rgba(255,255,255,0.9);
     }}
     .top-header-tag {{
         display: inline-block;
-        background: rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.18);
         padding: 4px 10px;
         font-size: 11px;
         font-weight: 600;
         letter-spacing: 1px;
         border-radius: 4px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }}
 
-    /* ── 탭 디자인 ── */
+    /* ── 탭 디자인 (볼드 강화) ── */
     .stTabs [data-baseweb="tab-list"] {{
         gap: 4px;
         background: {GRAY_100};
@@ -144,14 +157,20 @@ st.markdown(f"""
         background: transparent;
         border-radius: 6px;
         padding: 10px 18px;
-        color: {GRAY_700};
-        font-weight: 600;
-        font-size: 13.5px;
+        color: {BLACK};
         border: none;
+    }}
+    .stTabs [data-baseweb="tab"] p {{
+        font-weight: 700 !important;
+        font-size: 14px !important;
+        letter-spacing: -0.2px;
     }}
     .stTabs [aria-selected="true"] {{
         background: {PURPLE} !important;
+    }}
+    .stTabs [aria-selected="true"] p {{
         color: white !important;
+        font-weight: 800 !important;
     }}
     .stTabs [data-baseweb="tab-panel"] {{ padding-top: 8px; }}
 
@@ -196,8 +215,7 @@ st.markdown(f"""
         padding: 16px 20px;
         font-size: 13.5px;
         color: {GRAY_700};
-        line-height: 1.7;
-        margin-bottom: 8px;
+        line-height: 1.8;
     }}
     .info-banner b {{ color: {PURPLE}; }}
 
@@ -247,10 +265,44 @@ st.markdown(f"""
         margin-right: 12px;
         flex-shrink: 0;
     }}
-    .step-circle-mint {{ background: {MINT}; color: {BLACK}; }}
     .step-text {{ flex: 1; }}
     .step-title {{ font-size: 13.5px; font-weight: 600; color: {BLACK}; }}
     .step-sub {{ font-size: 12px; color: {GRAY_500}; margin-top: 3px; line-height: 1.5; }}
+
+    /* ── 분기 안내 박스 ── */
+    .branch-marker {{
+        margin: 20px 0 12px 0;
+        text-align: center;
+        position: relative;
+    }}
+    .branch-marker-line {{
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: {GRAY_200};
+        z-index: 0;
+    }}
+    .branch-marker-text {{
+        position: relative;
+        display: inline-block;
+        background: white;
+        padding: 6px 18px;
+        border: 1.5px solid {PURPLE};
+        color: {PURPLE};
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 20px;
+        z-index: 1;
+    }}
+    .branch-down-arrow {{
+        text-align: center;
+        color: {PURPLE};
+        font-size: 18px;
+        margin: 4px 0 8px 0;
+        font-weight: 700;
+    }}
 
     /* ── 채널 카드 ── */
     .channel-card {{
@@ -259,7 +311,6 @@ st.markdown(f"""
         padding: 24px;
         background: white;
         text-align: center;
-        transition: all 0.2s;
     }}
     .channel-logo-wrap {{
         height: 80px;
@@ -314,39 +365,6 @@ st.markdown(f"""
         line-height: 1.6;
     }}
 
-    /* ── 채널 상세 헤더 ── */
-    .channel-header {{
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        padding: 24px 28px;
-        background: white;
-        border: 1px solid {GRAY_200};
-        border-radius: 12px;
-        margin-bottom: 20px;
-    }}
-    .channel-header-logo {{
-        width: 72px;
-        height: 72px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: {GRAY_50};
-        border-radius: 12px;
-        flex-shrink: 0;
-    }}
-    .channel-header-text h2 {{
-        font-size: 22px;
-        font-weight: 700;
-        margin: 0;
-        color: {BLACK};
-    }}
-    .channel-header-text p {{
-        font-size: 13px;
-        color: {GRAY_500};
-        margin: 4px 0 0 0;
-    }}
-
     /* ── 점선 헬프 박스 ── */
     .empty-state {{
         border: 2px dashed {GRAY_200};
@@ -357,9 +375,6 @@ st.markdown(f"""
         font-size: 14px;
         background: {GRAY_50};
     }}
-
-    /* ── 버튼 영역 ── */
-    .stLinkButton button {{ font-weight: 600 !important; }}
 
     /* ── 메트릭 카드 ── */
     .metric-card {{
@@ -405,14 +420,13 @@ def section_header(num: int, title: str):
         unsafe_allow_html=True,
     )
 
-def render_steps_html(steps, mint_circle=False):
+def render_steps_html(steps):
     items = ""
-    circle_class = "step-circle step-circle-mint" if mint_circle else "step-circle"
     for i, (title, sub) in enumerate(steps, 1):
         sub_html = f'<div class="step-sub">{sub}</div>' if sub else ""
         items += (
             f'<div class="step-item">'
-            f'<div class="{circle_class}">{i}</div>'
+            f'<div class="step-circle">{i}</div>'
             f'<div class="step-text">'
             f'<div class="step-title">{title}</div>'
             f'{sub_html}'
@@ -421,23 +435,44 @@ def render_steps_html(steps, mint_circle=False):
     return items
 
 def load_logo(filename):
-    """assets 폴더에서 로고 이미지 경로 반환 (없으면 None)"""
     if not filename:
         return None
     path = ASSETS / filename
     return str(path) if path.exists() else None
 
 # ─────────────────────────────────────────────────────
-# 상단 헤더 (고정)
+# 상단 헤더 (하나투어 로고 + 제목)
 # ─────────────────────────────────────────────────────
-st.markdown(
-    f'<div class="top-header">'
-    f'<div class="top-header-tag">HANATOUR · RETAILER GUIDE</div>'
-    f'<h1>유통점 채널 대시보드</h1>'
-    f'<p>채널별 신규입점 절차 및 공통 안내를 한곳에서 확인하세요.</p>'
-    f'</div>',
-    unsafe_allow_html=True,
-)
+hanatour_logo = load_logo("hanatour.png")
+
+header_col1, header_col2 = st.columns([1, 8])
+with header_col1:
+    st.markdown(
+        f'<div class="top-header" style="padding:14px; justify-content:center;">',
+        unsafe_allow_html=True,
+    )
+    if hanatour_logo:
+        st.image(hanatour_logo, use_container_width=True)
+    else:
+        st.markdown(
+            f'<div style="background:white; border-radius:8px; padding:14px 10px; '
+            f'text-align:center; font-weight:800; color:{PURPLE}; font-size:13px;">'
+            f'HANATOUR</div>',
+            unsafe_allow_html=True,
+        )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with header_col2:
+    st.markdown(
+        f'<div class="top-header" style="margin-left:-8px;">'
+        f'<div class="top-header-text">'
+        f'<div class="top-header-tag">HANATOUR · RETAILER GUIDE</div>'
+        f'<h1>유통채널 안내</h1>'
+        f'<p>영업팀 대상 유통채널 관련 내용 안내 드립니다.</p>'
+        f'</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
 # ─────────────────────────────────────────────────────
 # 탭 구성
@@ -458,20 +493,19 @@ tabs = st.tabs(tab_labels)
 # 탭 0: 유통점 공통안내
 # ═════════════════════════════════════════════════════
 with tabs[0]:
-    # 안내사항
+    # ── 1. 안내사항 ──
     section_header(1, "안내사항")
     st.markdown(
         f'<div class="info-banner">'
-        f'<b>[유통점 모집공고]</b>에서 모집 조건 확인 후 문의 부탁드립니다.<br>'
+        f'<b>[유통점 모집공고]</b> 사이트 통해 입점 조건 확인 부탁드리겠습니다.<br>'
         f'동일 점포에 복수 지원 시 내부 평가지표에 근거하여 평가 진행 후 선정합니다.<br>'
-        f'세부 조건은 영업전략팀 확인을 권장합니다.'
+        f'세부 조건은 <b>영업전략팀</b>으로 문의 부탁드리겠습니다.'
         f'</div>',
         unsafe_allow_html=True,
     )
 
-    # 액션 버튼
     st.markdown('<div style="height: 12px;"></div>', unsafe_allow_html=True)
-    b1, b2, b3 = st.columns([1, 1, 2])
+    b1, b2, _ = st.columns([1, 1, 2])
     with b1:
         st.link_button(
             "유통점 모집공고",
@@ -486,30 +520,41 @@ with tabs[0]:
             use_container_width=True,
         )
 
-    # 유통점 문의 절차
+    # ── 2. 유통점 문의절차 (선형 5단계 → 분기 → 2갈래) ──
     section_header(2, "유통점 문의 절차")
+
+    # 1~5단계 (선형)
     st.markdown(
         f'<div class="card">'
         f'<div class="card-title">'
         f'<span>문의 → 선정 프로세스</span>'
         f'<span class="card-count">총 {len(INQUIRY_PROCESS)}단계</span>'
         f'</div>'
-        f'{render_steps_html(INQUIRY_PROCESS, mint_circle=True)}'
+        f'{render_steps_html(INQUIRY_PROCESS)}'
         f'</div>',
         unsafe_allow_html=True,
     )
 
-    # 입점 절차
-    section_header(3, "입점 절차")
+    # 분기 마커: "대리점 선정 및 입점 확정"
+    st.markdown(
+        f'<div class="branch-marker">'
+        f'<span class="branch-marker-line"></span>'
+        f'<span class="branch-marker-text">대리점 선정 및 입점 확정</span>'
+        f'</div>'
+        f'<div class="branch-down-arrow">▼</div>',
+        unsafe_allow_html=True,
+    )
+
+    # 두 갈래 분기: A. 공식인증예약센터 / B. 일반대리점
     c1, c2 = st.columns(2)
     with c1:
         st.markdown(
             f'<div class="card">'
             f'<div class="card-title">'
-            f'<span>A. 공식인증예약센터</span>'
-            f'<span class="card-count">총 {len(COMMON_STEPS_A)}단계</span>'
+            f'<span>A. 공식인증예약센터일 경우</span>'
+            f'<span class="card-count">총 {len(ENTRY_OFFICIAL)}단계</span>'
             f'</div>'
-            f'{render_steps_html(COMMON_STEPS_A)}'
+            f'{render_steps_html(ENTRY_OFFICIAL)}'
             f'</div>',
             unsafe_allow_html=True,
         )
@@ -517,22 +562,22 @@ with tabs[0]:
         st.markdown(
             f'<div class="card">'
             f'<div class="card-title">'
-            f'<span>B. 일반대리점</span>'
-            f'<span class="card-count">총 {len(COMMON_STEPS_B)}단계</span>'
+            f'<span>B. 일반대리점일 경우</span>'
+            f'<span class="card-count">총 {len(ENTRY_GENERAL)}단계</span>'
             f'</div>'
-            f'{render_steps_html(COMMON_STEPS_B)}'
+            f'{render_steps_html(ENTRY_GENERAL)}'
             f'</div>',
             unsafe_allow_html=True,
         )
 
-    # 지원 방법 / 근무 규정
-    section_header(4, "지원 방법 · 근무 규정")
+    # ── 3. 지원 방법 · 근무 규정 ──
+    section_header(3, "지원 방법 · 근무 규정")
     c1, c2 = st.columns(2)
     with c1:
         st.markdown(
             f'<div class="card">'
             f'<div class="card-title"><span>지원 방법</span></div>'
-            f'<div style="font-size:13.5px; color:{GRAY_700}; line-height:1.7;">'
+            f'<div style="font-size:13.5px; color:{GRAY_700}; line-height:1.8;">'
             f'• 입점 희망 대리점과 소통하며 <b>입점제안서 작성</b><br>'
             f'• 작성 완료 후 영업전략팀 담당자에게 쪽지 전달'
             f'</div>'
@@ -549,7 +594,7 @@ with tabs[0]:
         st.markdown(
             f'<div class="card">'
             f'<div class="card-title"><span>근무 규정</span></div>'
-            f'<div style="font-size:13.5px; color:{GRAY_700}; line-height:1.8;">'
+            f'<div style="font-size:13.5px; color:{GRAY_700}; line-height:1.9;">'
             f'• 근무 시 <b>출입증(명찰) 패용</b> 필수<br>'
             f'• 유통점 매장 영업시간 준수<br>'
             f'• 출장·공항 미팅 등 부득이한 부재 시 <b>부재 중 팻말 설치 및 점포 담당자와 소통</b> 필수'
@@ -558,8 +603,8 @@ with tabs[0]:
             unsafe_allow_html=True,
         )
 
-    # 채널별 요약 카드
-    section_header(5, "채널별 요약")
+    # ── 4. 채널별 요약 ──
+    section_header(4, "채널별 요약")
     cols = st.columns(4)
     items = list(CHANNELS.items())
     for idx, (name, info) in enumerate(items):
@@ -592,10 +637,8 @@ with tabs[0]:
 # 탭 1~7: 채널별 상세
 # ═════════════════════════════════════════════════════
 def render_channel_tab(channel_name: str, info: dict):
-    """채널별 상세 페이지 렌더링"""
     logo_path = load_logo(info["logo"])
 
-    # 채널 헤더
     c1, c2 = st.columns([1, 6])
     with c1:
         if logo_path:
@@ -623,7 +666,6 @@ def render_channel_tab(channel_name: str, info: dict):
     st.markdown('<div style="height: 8px;"></div>', unsafe_allow_html=True)
 
     if channel_name == "홈플러스":
-        # 홈플러스만 실데이터
         section_header(1, "임대 · 관리비")
         c1, c2, c3 = st.columns(3)
         with c1:
@@ -681,7 +723,6 @@ def render_channel_tab(channel_name: str, info: dict):
                 unsafe_allow_html=True,
             )
     else:
-        # 그 외 채널은 빈 상태
         st.markdown(
             f'<div class="empty-state">'
             f'<div style="font-size:32px; margin-bottom:8px;">📋</div>'
@@ -692,7 +733,6 @@ def render_channel_tab(channel_name: str, info: dict):
             unsafe_allow_html=True,
         )
 
-# 채널 탭 렌더링
 channel_tab_names = ["이마트", "홈플러스", "롯데마트", "롯데백화점", "현대백화점", "NC", "기타"]
 for tab_idx, ch_name in enumerate(channel_tab_names, start=1):
     with tabs[tab_idx]:

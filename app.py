@@ -106,37 +106,31 @@ st.markdown(f"""
     header[data-testid="stHeader"] {{ display: none; }}
     [data-testid="stSidebar"] {{ display: none; }}
 
-      /* ── 상단 헤더 (텍스트 수직 중앙 정렬) ── */
+    /* ── 상단 헤더 (로고 박스와 높이 통일) ── */
     .top-header {{
         background: linear-gradient(135deg, {PURPLE} 0%, {MINT} 180%);
         border-radius: 12px;
-        padding: 14px 28px;
+        padding: 18px 28px;
         color: white;
         height: 130px;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        align-items: flex-start;
         box-sizing: border-box;
         overflow: hidden;
     }}
-    .top-header-text {{
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }}
+    .top-header-text {{ width: 100%; }}
     .top-header-text h1 {{
-        font-size: 28px !important;
+        font-size: 30px !important;
         font-weight: 800 !important;
-        margin: 4px 0 !important;
+        margin: 0 !important;
         color: white !important;
         letter-spacing: -0.3px;
         line-height: 1.2;
     }}
     .top-header-text p {{
         font-size: 12.5px !important;
-        margin: 4px 0 0 0 !important;
+        margin: 6px 0 0 0 !important;
         color: rgba(255,255,255,0.92) !important;
         line-height: 1.4;
     }}
@@ -148,7 +142,7 @@ st.markdown(f"""
         font-weight: 700;
         letter-spacing: 1px;
         border-radius: 4px;
-        margin: 0 0 4px 0;
+        margin-bottom: 6px;
         color: white;
     }}
 

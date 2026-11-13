@@ -526,21 +526,27 @@ st.markdown(
         border-top: 1px solid {GRAY_200};
     }}
 
-    /* 데이터 표: 모바일에서는 가로 스크롤 */
-    .table-wrap {{ width:100%; overflow-x:auto; border:1px solid #E5E7EB; border-radius:8px; }}
-    table.report {{ border-collapse:collapse; width:100%; font-size:13px; background:white; color:#111; }}
-    table.report th {{ background:#F3F4F6; color:#111; font-weight:700; white-space:nowrap; }}
-    table.report th, table.report td {{ border-bottom:1px solid #E5E7EB; padding:9px 10px; vertical-align:top; text-align:left; }}
+    /* 공통 표: 내용에 맞춘 간격, 긴 표는 가로 스크롤 */
+    .table-wrap {{ width:100%; overflow-x:auto; border:1px solid {GRAY_200}; border-radius:8px; }}
+    table.report {{ border-collapse:collapse; width:max-content; min-width:100%; table-layout:auto; font-size:13px; line-height:1.45; letter-spacing:normal; background:white; color:{BLACK}; }}
+    table.report th, table.report td {{ border-bottom:1px solid {GRAY_200}; padding:6px 9px; height:auto; vertical-align:middle; text-align:left; }}
+    table.report th {{ background:{GRAY_100}; color:{BLACK}; font-weight:700; white-space:nowrap; }}
+    table.report td {{ max-width:320px; white-space:normal; overflow-wrap:anywhere; }}
     table.report td.number, table.report th.number {{ text-align:right; white-space:nowrap; }}
     table.report td.center, table.report th.center {{ text-align:center; white-space:nowrap; }}
-
-    /* 기업회생 타임라인 전용: 주요 항목은 한 줄, 상세내용은 줄바꿈 */
+    table.report tbody tr:last-child td {{ border-bottom:none; }}
+    table.report tbody tr:nth-child(even) {{ background:{GRAY_50}; }}
     .timeline-wrap {{ max-width:100%; overflow-x:auto; }}
-    table.timeline-report {{ width:max-content; min-width:100%; table-layout:auto; }}
-    table.timeline-report th:nth-child(-n+4),
-    table.timeline-report td:nth-child(-n+4) {{ white-space:nowrap; word-break:normal; overflow-wrap:normal; }}
-    table.timeline-report th:nth-child(5),
-    table.timeline-report td:nth-child(5) {{ width:500px; min-width:440px; max-width:580px; white-space:normal; overflow-wrap:anywhere; }}
+    table.timeline-report {{ table-layout:auto; }}
+    table.timeline-report th:nth-child(1), table.timeline-report td:nth-child(1),
+    table.timeline-report th:nth-child(2), table.timeline-report td:nth-child(2),
+    table.timeline-report th:nth-child(4), table.timeline-report td:nth-child(4) {{ white-space:nowrap; }}
+    table.timeline-report td:nth-child(3) {{ max-width:320px; white-space:normal; }}
+    /* 표의 긴 설명을 별도 영역으로 분리 */
+    .detail-item {{ border:1px solid {GRAY_200}; border-left:3px solid {PURPLE}; border-radius:6px; padding:10px 12px; margin:8px 0; background:white; }}
+    .detail-heading {{ font-size:13px; font-weight:700; color:{BLACK}; margin-bottom:5px; }}
+    .detail-label {{ font-size:12px; font-weight:700; color:{PURPLE}; margin:7px 0 3px; }}
+    .detail-body {{ font-size:13px; line-height:1.55; color:{GRAY_700}; overflow-wrap:anywhere; }}
 
 </style>
 """,
@@ -938,7 +944,7 @@ def excel_table(path, sheet, header, key, raw=False):
         return
     if raw:
         df.columns = [f"열 {i+1}" for i in range(len(df.columns))]
-        st.caption("복합 표의 원본 행을 표시합니다. 병합 셀과 수식 결과는 엑셀과 다르게 보일 수 있습니다.")
+        st.caption("복합 표는 원본 행을 그대로 표시합니다. 여러 표나 설명이 섞여 있을 수 있으며, 병합 셀과 수식 결과는 엑셀과 다르게 보일 수 있습니다.")
     else:
         df.columns = [f"항목 {i+1}" if str(c).startswith("Unnamed:") else str(c) for i, c in enumerate(df.columns)]
     text = st.text_input("엑셀 내용 검색", key=key, placeholder="점포명이나 검색어를 입력하세요.").strip()
@@ -952,7 +958,7 @@ def excel_table(path, sheet, header, key, raw=False):
     # 숫자는 우측 정렬, 그 외 텍스트는 좌측 정렬. 모든 셀은 report_table에서 HTML 이스케이프 처리합니다.
     numeric_columns = tuple(i for i in range(len(df.columns)) if pd.api.types.is_numeric_dtype(df.iloc[:, i]))
     rows = [[format_excel_value(v) for v in row] for row in df.itertuples(index=False, name=None)]
-    report_table(list(df.columns), rows, numeric=numeric_columns)
+    report_table(list(df.columns), rows, numeric=numeric_columns, inside_expander=True)
 
 
 def render_excel_sections(channel_name):
@@ -971,7 +977,7 @@ def render_excel_sections(channel_name):
         st.warning("기타 시트에는 민감정보가 포함되어 있어 표시하지 않습니다. 엑셀 파일 자체에서도 민감정보를 제거한 뒤 배포하세요.")
         return
     entries = mapping.get(channel_name, [])
-    st.caption("이 영역은 엑셀 파일을 읽습니다. 위쪽의 기존 설명과 표는 코드에 저장된 별도 기록이므로 자동 갱신되지 않습니다.")
+    st.caption("이 영역은 엑셀 파일을 읽습니다. ‘내용·상세내용·회신내용’ 열은 표 아래 상세내용에 분리해 표시합니다. 위쪽의 기존 설명과 표는 코드에 저장된 별도 기록이므로 자동 갱신되지 않습니다.")
     for i, (label, path, sheet, header, raw) in enumerate(entries):
         with st.expander(label, expanded=(i == 0)):
             excel_table(path, sheet, header, f"excel_{channel_name}_{i}", raw)
@@ -985,15 +991,56 @@ def esc(value):
     return html.escape(str(value), quote=True)
 
 
-def report_table(headers, rows, numeric=(), centered=(), timeline=False):
+def report_table(headers, rows, numeric=(), centered=(), timeline=False, inside_expander=False):
+    """표는 간결하게 표시하고, 설명 열은 표 아래 별도 영역에 보존합니다."""
+    detail_names = {"내용", "상세내용", "회신내용"}
+    detail_indices = [i for i, header in enumerate(headers) if str(header).strip() in detail_names]
+    display_rows = []
+    details = []
+    for row in rows:
+        shown = list(row)
+        parts = []
+        for i in detail_indices:
+            if i < len(row) and str(row[i]).strip():
+                parts.append((str(headers[i]), str(row[i])))
+        if parts:
+            detail_no = len(details) + 1
+            for i in detail_indices:
+                if i < len(row) and str(row[i]).strip():
+                    shown[i] = f"상세 {detail_no}"
+            # 행의 앞쪽 식별 정보는 내용과 분리한 설명의 제목으로 사용합니다.
+            identity = [str(v) for i, v in enumerate(row)
+                        if i not in detail_indices and str(v).strip()][:3]
+            details.append((detail_no, identity, parts))
+        display_rows.append(shown)
+
     def cell(value, index, tag):
         cls = ' class="number"' if index in numeric else (' class="center"' if index in centered else '')
         return f'<{tag}{cls}>{esc(value).replace(chr(10), "<br>")}</{tag}>'
+
     head = ''.join(cell(v, i, 'th') for i, v in enumerate(headers))
-    body = ''.join('<tr>' + ''.join(cell(v, i, 'td') for i, v in enumerate(row)) + '</tr>' for row in rows)
+    body = ''.join('<tr>' + ''.join(cell(v, i, 'td') for i, v in enumerate(row)) + '</tr>' for row in display_rows)
     wrap_class = "table-wrap timeline-wrap" if timeline else "table-wrap"
     table_class = "report timeline-report" if timeline else "report"
     st.markdown(f'<div class="{wrap_class}"><table class="{table_class}"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>', unsafe_allow_html=True)
+
+    if details:
+        # 엑셀 영역은 이미 expander 안에 있으므로 expander를 중첩하지 않습니다.
+        detail_area = st.container() if inside_expander else st.expander(
+            f"표와 연결된 상세내용 ({len(details)}건)", expanded=len(details) <= 5
+        )
+        with detail_area:
+            if inside_expander:
+                st.markdown(f"**표와 연결된 상세내용 ({len(details)}건)**")
+            st.caption("표의 상세 번호와 아래 번호가 연결됩니다. 검색 중에는 검색 결과의 상세내용만 표시됩니다.")
+            for number, identity, parts in details:
+                title = f"상세 {number}" + (" · " + " · ".join(identity) if identity else "")
+                content = ''.join(
+                    f'<div class="detail-label">{esc(label)}</div>'
+                    f'<div class="detail-body">{esc(value).replace(chr(10), "<br>")}</div>'
+                    for label, value in parts
+                )
+                st.markdown(f'<div class="detail-item"><div class="detail-heading">{esc(title)}</div>{content}</div>', unsafe_allow_html=True)
 
 
 def parse_rows(text, expected):

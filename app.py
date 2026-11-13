@@ -542,6 +542,9 @@ st.markdown(
     table.timeline-report th:nth-child(2), table.timeline-report td:nth-child(2),
     table.timeline-report th:nth-child(4), table.timeline-report td:nth-child(4) {{ white-space:nowrap; }}
     table.timeline-report td:nth-child(3) {{ max-width:320px; white-space:normal; }}
+    .inline-detail summary {{ cursor:pointer; color:{PURPLE}; font-weight:700; white-space:normal; }}
+    .inline-detail-label {{ color:{PURPLE}; font-size:12px; font-weight:700; margin:9px 0 3px; }}
+    .inline-detail-body {{ white-space:normal; min-width:220px; max-width:540px; line-height:1.55; overflow-wrap:anywhere; color:{GRAY_700}; }}
     /* 표의 긴 설명을 별도 영역으로 분리 */
     .detail-item {{ border:1px solid {GRAY_200}; border-left:3px solid {PURPLE}; border-radius:6px; padding:10px 12px; margin:8px 0; background:white; }}
     .detail-heading {{ font-size:13px; font-weight:700; color:{BLACK}; margin-bottom:5px; }}
@@ -928,61 +931,6 @@ def format_excel_value(value):
     return str(value)
 
 
-def excel_table(path, sheet, header, key, raw=False):
-    st.caption(f"출처: {path.name} / {sheet} 시트")
-    if not path.exists():
-        st.warning(f"{path.name} 파일을 app.py와 같은 폴더에 넣어주세요.")
-        return
-    try:
-        df = read_excel_linked(str(path), sheet, header, path.stat().st_mtime_ns)
-    except Exception as exc:
-        st.error(f"시트를 읽을 수 없습니다. 파일명과 시트 이름, openpyxl 설치 여부를 확인해 주세요. ({type(exc).__name__}: {exc})")
-        return
-    df = df.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all").dropna(axis=1, how="all")
-    if df.empty:
-        st.info("이 시트에는 표시할 데이터가 없습니다.")
-        return
-    if raw:
-        df.columns = [f"열 {i+1}" for i in range(len(df.columns))]
-        st.caption("복합 표는 원본 행을 그대로 표시합니다. 여러 표나 설명이 섞여 있을 수 있으며, 병합 셀과 수식 결과는 엑셀과 다르게 보일 수 있습니다.")
-    else:
-        df.columns = [f"항목 {i+1}" if str(c).startswith("Unnamed:") else str(c) for i, c in enumerate(df.columns)]
-    text = st.text_input("엑셀 내용 검색", key=key, placeholder="점포명이나 검색어를 입력하세요.").strip()
-    if text:
-        mask = df.astype(str).apply(lambda col: col.str.contains(text, case=False, regex=False, na=False)).any(axis=1)
-        df = df[mask]
-    st.caption(f"표시: {len(df):,}개 행")
-    if df.empty:
-        st.info("검색 결과가 없습니다.")
-        return
-    # 숫자는 우측 정렬, 그 외 텍스트는 좌측 정렬. 모든 셀은 report_table에서 HTML 이스케이프 처리합니다.
-    numeric_columns = tuple(i for i in range(len(df.columns)) if pd.api.types.is_numeric_dtype(df.iloc[:, i]))
-    rows = [[format_excel_value(v) for v in row] for row in df.itertuples(index=False, name=None)]
-    report_table(list(df.columns), rows, numeric=numeric_columns, inside_expander=True)
-
-
-def render_excel_sections(channel_name):
-    mapping = {
-        "외부지원금": [("유통채널관리 원본", MAIN_EXCEL, "유통채널관리", None, True), ("홈플러스 청구 내역 원본", MAIN_EXCEL, "홈플러스", None, True)],
-        "홈플러스": [("기업회생 점포 현황", HOME_EXCEL, "홈플러스 기업회생", 1, False), ("정리된 기업회생 타임라인", HOME_EXCEL, "Sheet1", 1, False), ("원본 기업회생 타임라인", HOME_EXCEL, "홈플러스 기업회생 타임라인", 1, False), ("매출수수료 현황", MAIN_EXCEL, "홈플러스 매출수수료 현황", 1, False), ("점포별 계약매출", HOME_EXCEL, "홈플러스 점포별 계약매출", 1, False), ("전년대비 매출", HOME_EXCEL, "홈플러스 전년대비 매출", 1, False), ("매출순위", MAIN_EXCEL, "홈플러스 매출순위", 0, False), ("점포별 이슈 원본", HOME_EXCEL, "홈플러스 점포별 이슈", None, True)],
-        "롯데마트": [("점포별 업무", MAIN_EXCEL, "롯데마트", None, True)],
-        "롯데백화점": [("점포별 업무", MAIN_EXCEL, "롯데백화점", 0, False)],
-        "AK": [("점포별 업무", MAIN_EXCEL, "AK", 0, False)],
-        "NC": [("점포별 업무", MAIN_EXCEL, "NC", None, True)],
-        "직계약 대리점": [("직계약 대리점", MAIN_EXCEL, "직계약 대리점", 0, False), ("전체 유통점 리스트", MAIN_EXCEL, "전체 유통점 리스트", 0, False)],
-    }
-    st.divider()
-    st.subheader("엑셀 연동 현황")
-    if channel_name == "기타":
-        st.warning("기타 시트에는 민감정보가 포함되어 있어 표시하지 않습니다. 엑셀 파일 자체에서도 민감정보를 제거한 뒤 배포하세요.")
-        return
-    entries = mapping.get(channel_name, [])
-    st.caption("이 영역은 엑셀 파일을 읽습니다. ‘내용·상세내용·회신내용’ 열은 표 아래 상세내용에 분리해 표시합니다. 위쪽의 기존 설명과 표는 코드에 저장된 별도 기록이므로 자동 갱신되지 않습니다.")
-    for i, (label, path, sheet, header, raw) in enumerate(entries):
-        with st.expander(label, expanded=(i == 0)):
-            excel_table(path, sheet, header, f"excel_{channel_name}_{i}", raw)
-
-
 # ── 외부지원금 및 홈플러스 상세 데이터 ──
 BUDGET_URL = "https://hanatour0.sharepoint.com/:x:/r/sites/msteams_f947dd/_layouts/15/Doc.aspx?sourcedoc={C3059D9E-98E5-44F2-AE9C-708373259FA7}&file=%25uc720%25ud1b5%25uc810%20%25uc608%25uc0b0%25ud604%25ud669.xlsx&action=default&mobileredirect=true"
 
@@ -1043,6 +991,106 @@ def report_table(headers, rows, numeric=(), centered=(), timeline=False, inside_
                 st.markdown(f'<div class="detail-item"><div class="detail-heading">{esc(title)}</div>{content}</div>', unsafe_allow_html=True)
 
 
+
+def inline_detail_table(headers, rows, trigger_index, detail_indices, numeric=(), centered=(), timeline=False):
+    """주제 또는 대리점명을 클릭하면 해당 행의 상세 내용이 셀 안에서 펼쳐집니다."""
+    visible = [i for i in range(len(headers)) if i not in detail_indices]
+    head = ''.join(f'<th>{esc(headers[i])}</th>' for i in visible)
+    body = []
+    for row in rows:
+        parts = [(str(headers[i]), str(row[i])) for i in detail_indices
+                 if i < len(row) and str(row[i]).strip()]
+        cells = []
+        for i in visible:
+            value = str(row[i]) if i < len(row) else ''
+            cls = ' class="number"' if i in numeric else (' class="center"' if i in centered else '')
+            content = esc(value).replace('\n', '<br>')
+            if i == trigger_index and parts:
+                label = content or '상세 보기'
+                detail = ''.join(
+                    f'<div class="inline-detail-label">{esc(name)}</div>'
+                    f'<div class="inline-detail-body">{esc(text).replace(chr(10), "<br>")}</div>'
+                    for name, text in parts
+                )
+                content = f'<details class="inline-detail"><summary>{label}</summary>{detail}</details>'
+            cells.append(f'<td{cls}>{content}</td>')
+        body.append('<tr>' + ''.join(cells) + '</tr>')
+    table_class = 'report timeline-report' if timeline else 'report'
+    st.markdown(
+        f'<div class="table-wrap"><table class="{table_class}">'
+        f'<thead><tr>{head}</tr></thead><tbody>{"".join(body)}</tbody></table></div>',
+        unsafe_allow_html=True,
+    )
+
+
+def format_lotte_number(value):
+    """롯데백화점 번호: 쉼표 제거 후 숫자 네 자리 뒤에 하이픈을 넣습니다."""
+    if pd.isna(value):
+        return ''
+    if isinstance(value, Number) and not isinstance(value, bool):
+        if float(value).is_integer():
+            value = str(int(value))
+        else:
+            return str(value).replace(',', '')
+    value = str(value).strip().replace(',', '')
+    digits = value.replace('-', '').replace(' ', '')
+    if digits.isdigit():
+        return digits[:4] + '-' + digits[4:] if len(digits) > 4 else digits
+    return value
+
+
+def render_agency_sheet(channel_name):
+    """롯데백화점과 AK 원본 표를 본문에 표시하며 상세는 대리점명에서 펼칩니다."""
+    st.subheader(f'{channel_name} 점포별 업무')
+    if not MAIN_EXCEL.exists():
+        st.warning(f'{MAIN_EXCEL.name} 파일을 app.py와 같은 폴더에 넣어주세요.')
+        return
+    try:
+        df = read_excel_linked(str(MAIN_EXCEL), channel_name, 0, MAIN_EXCEL.stat().st_mtime_ns)
+        # 기존 설정(첫 행 제목)을 우선 유지하되, 첫 행이 제목이 아니면 둘째 행을 확인합니다.
+        def has_agency(columns):
+            return any('대리점' in str(c).replace(' ', '') and
+                       ('명' in str(c).replace(' ', '') or str(c).replace(' ', '') == '대리점')
+                       for c in columns)
+        if not has_agency(df.columns):
+            second = read_excel_linked(str(MAIN_EXCEL), channel_name, 1, MAIN_EXCEL.stat().st_mtime_ns)
+            if has_agency(second.columns):
+                df = second
+    except Exception as exc:
+        st.error(f'{channel_name} 시트를 읽을 수 없습니다. 파일과 시트 이름을 확인해 주세요. ({type(exc).__name__}: {exc})')
+        return
+    df = df.replace(r'^\s*$', pd.NA, regex=True).dropna(how='all').dropna(axis=1, how='all')
+    if df.empty:
+        st.info('표시할 데이터가 없습니다.')
+        return
+    headers = [f'항목 {i + 1}' if str(c).startswith('Unnamed:') else str(c).strip()
+               for i, c in enumerate(df.columns)]
+    agency_indices = [i for i, h in enumerate(headers) if '대리점' in h.replace(' ', '') and
+                      ('명' in h.replace(' ', '') or h.replace(' ', '') == '대리점')]
+    detail_indices = [i for i, h in enumerate(headers)
+                      if h.replace(' ', '') in {'내용', '상세', '상세내용', '회신내용'}]
+    search = st.text_input('점포명·대리점명·내용 검색', key=f'agency_search_{channel_name}').strip()
+    if search:
+        df = df[df.astype(str).apply(lambda col: col.str.contains(search, case=False, regex=False, na=False)).any(axis=1)]
+    st.caption(f'표시: {len(df):,}개 행')
+    if df.empty:
+        st.info('검색 결과가 없습니다.')
+        return
+    number_indices = [i for i, h in enumerate(headers) if h.replace(' ', '') == '번호'] if channel_name == '롯데백화점' else []
+    rows = [[format_lotte_number(v) if i in number_indices else format_excel_value(v)
+             for i, v in enumerate(row)] for row in df.itertuples(index=False, name=None)]
+    numeric = tuple(i for i in range(len(headers)) if i not in number_indices and pd.api.types.is_numeric_dtype(df.iloc[:, i]))
+    if not agency_indices:
+        st.warning('대리점명 열을 찾지 못해 원본 표로 표시합니다. 시트의 열 이름을 확인해 주세요.')
+        # 자동 분리하지 않고 모든 내용을 보존합니다.
+        inline_detail_table(headers, rows, -1, [], numeric=numeric)
+    elif not detail_indices:
+        st.caption('별도 상세내용 열을 찾지 못해 원본 열을 그대로 표시합니다.')
+        inline_detail_table(headers, rows, agency_indices[0], [], numeric=numeric)
+    else:
+        st.caption('대리점명을 클릭하면 해당 행의 상세내용을 확인할 수 있습니다.')
+        inline_detail_table(headers, rows, agency_indices[0], detail_indices, numeric=numeric)
+
 def parse_rows(text, expected):
     rows = list(csv.reader(io.StringIO(text.strip()), delimiter='|'))
     for i, row in enumerate(rows, 1):
@@ -1097,10 +1145,10 @@ FEES = parse_rows("""
 7월|156,078,646|143,227,478|76,304,042
 8월|128,443,225|98,576,899|61,037,206
 9월|215,307,145|163,572,943|60,517,930
-10월|246,904,127|350,874,321|101,197,995
+10월|246,904,127|350,874,321|99,869,516
 11월|199,750,059|212,452,806|60,190,417
 12월|182,856,569|173,984,767|26,388,660
-총 합|2,262,925,699|2,422,272,158|1,411,646,114
+총 합|2,262,925,699|2,422,272,158|1,410,317,635
 """, 4)
 
 
@@ -1294,7 +1342,7 @@ def render_homeplus_details():
         ]
         # 날짜순 정렬은 안정 정렬이므로 같은 날짜의 원래 순서는 유지됩니다.
         rows = sorted(rows, key=lambda row: row[0])
-        st.caption(f"표시: {len(rows)}건 / 전체 {len(TIMELINE)}건 · 오래된 순")
+        st.caption(f"표시: {len(rows)}건 / 전체 {len(TIMELINE)}건 · 오래된 순 · 주제를 클릭하면 상세내용이 펼쳐집니다.")
 
         if not rows:
             st.info("선택한 조건에 해당하는 내역이 없습니다.")
@@ -1303,10 +1351,12 @@ def render_homeplus_details():
             for year in sorted({row[0][:4] for row in rows}):
                 year_rows = [row for row in rows if row[0][:4] == year]
                 st.markdown(f"#### {year}년")
-                report_table(
+                inline_detail_table(
                     ["일자", "키워드", "주제", "발신 → 수신", "상세내용"],
                     [[date, keyword, title, f"{sender} → {receiver}", detail]
                      for date, keyword, sender, receiver, title, detail in year_rows],
+                    trigger_index=2,
+                    detail_indices=(4,),
                     centered=(0,),
                     timeline=True,
                 )
@@ -1489,6 +1539,10 @@ def render_channel_tab(channel_name: str, info: dict):
     elif channel_name == "외부지원금":
         render_external_details()
 
+    # ── 롯데백화점과 AK: 대리점명을 눌러 상세내용 확인 ──
+    elif channel_name in ("롯데백화점", "AK"):
+        render_agency_sheet(channel_name)
+
     # ── 그 외 메뉴 ──
     else:
         st.markdown(
@@ -1503,7 +1557,7 @@ def render_channel_tab(channel_name: str, info: dict):
             f'{channel_name} 기존 안내'
             f'</div>'
             f'<div>'
-            f'엑셀 연동 현황을 아래에서 확인해 주세요.'
+            f'관련 내용이 업데이트될 예정입니다.'
             f'</div>'
             f'</div>',
             unsafe_allow_html=True,
@@ -1533,7 +1587,6 @@ for tab_idx, channel_name in enumerate(
             channel_name,
             CHANNELS[channel_name],
         )
-        render_excel_sections(channel_name)
 
 
 # ─────────────────────────────────────────────────────

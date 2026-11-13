@@ -690,7 +690,7 @@ with header_right:
         '<div class="top-header">'
         '<div class="top-header-text">'
         '<h1>유통점 업무 인수인계</h1>'
-        '<p>영업전략팀 이강일</p>'
+        
         '</div>'
         '</div>',
         unsafe_allow_html=True,

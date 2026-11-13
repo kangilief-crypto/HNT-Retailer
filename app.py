@@ -528,9 +528,11 @@ st.markdown(
 
     /* 데이터 표: 모바일에서는 가로 스크롤 */
     .table-wrap {{ width:100%; overflow-x:auto; border:1px solid #E5E7EB; border-radius:8px; }}
-    table.report {{ border-collapse:collapse; width:100%; font-size:13px; background:white; color:#111; }}
+    /* 모든 탭의 기존 표와 엑셀 연동 표에 동일하게 적용 */
+    table.report {{ border-collapse:collapse; width:max-content; max-width:none; table-layout:auto; font-size:13px; line-height:1.35; letter-spacing:normal; background:white; color:#111; }}
     table.report th {{ background:#F3F4F6; color:#111; font-weight:700; white-space:nowrap; }}
-    table.report th, table.report td {{ border-bottom:1px solid #E5E7EB; padding:9px 10px; vertical-align:top; text-align:left; }}
+    table.report th, table.report td {{ border-bottom:1px solid #E5E7EB; padding:4px 8px; height:auto; line-height:1.35; letter-spacing:normal; vertical-align:middle; text-align:left; }}
+    table.report td {{ max-width:360px; white-space:normal; overflow-wrap:anywhere; }}
     table.report td.number, table.report th.number {{ text-align:right; white-space:nowrap; }}
     table.report td.center, table.report th.center {{ text-align:center; white-space:nowrap; }}
 
